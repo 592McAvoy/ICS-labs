@@ -1,0 +1,61 @@
+#ID: 516030910101
+#Name: Luo Yuchen
+
+#Execution begins
+    .pos 0
+init:
+    irmovq Stack,%rsp
+    irmovq Stack,%rbp
+    call Main
+    halt
+
+#block data
+    .align 8
+#Source block
+src:
+    .quad 0x00a
+    .quad 0x0b0
+    .quad 0xc00
+#Destination block
+dest:
+    .quad 0x111
+    .quad 0x222
+    .quad 0x333
+
+#Main Function
+Main:
+    pushq %rbp
+    rrmovq %rsp,%rbp
+    irmovq src,%rdi
+    irmovq dest,%rsi
+    irmovq $3,%rdx
+    call copy_block
+    rrmovq %rbp,%rsp
+    popq %rbp
+    ret
+
+#Copy a source block to a destination block
+copy_block:
+    pushq %rbp
+    rrmovq %rsp,%rbp
+    xorq %rax,%rax #result=0
+    irmovq $8,%rbx
+    irmovq $1,%r12
+    andq %rdx,%rdx
+    jle End
+Loop:
+    mrmovq (%rdi),%r13   #val=*src
+    rmmovq %r13,(%rsi)  #*dest=val
+    xorq %r13,%rax  #result^=val
+    addq %rbx,%rdi
+    addq %rbx,%rsi
+    subq %r12,%rdx
+    jg Loop
+End:
+    rrmovq %rbp,%rsp
+    popq %rbp
+    ret
+
+#stack begins here
+    .pos 0x100
+Stack:

@@ -1,0 +1,55 @@
+#ID: 516030910101
+#Name: Luo Yuchen
+
+#Execution begins
+    .pos 0
+init:
+    irmovq Stack,%rsp
+    irmovq Stack,%rbp
+    call Main
+    halt
+
+#linked list
+    .align 8
+ele1:
+    .quad 0x00a
+    .quad ele2
+ele2:
+    .quad 0x0b0
+    .quad ele3
+ele3:
+    .quad 0xc00
+    .quad 0
+
+#Main Function
+Main:
+    pushq %rbp
+    rrmovq %rsp,%rbp
+    irmovq ele1,%rdi
+    call rsum_list
+    rrmovq %rbp,%rsp
+    popq %rbp
+    ret
+
+#Recursively sum linked list elements
+rsum_list:
+    pushq %rbp
+    rrmovq %rsp,%rbp
+    pushq %rbx  #save val
+    xorq %rax,%rax
+    rrmovq %rdi,%r12
+    andq %r12,%r12
+    je End 
+    mrmovq (%r12),%rbx  #val = ls->val
+    mrmovq 8(%r12),%rdi
+    call rsum_list
+    addq %rbx,%rax
+End:
+    popq %rbx
+    rrmovq %rbp,%rsp
+    popq %rbp
+    ret
+
+#stack begins here
+    .pos 0x150
+Stack:
